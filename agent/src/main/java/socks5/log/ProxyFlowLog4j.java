@@ -1,20 +1,12 @@
-package com.geccocrawler.socks5.log;
+package socks5.log;
 
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.Enumeration;
-
+import socks5.handler.ProxyChannelTrafficShapingHandler;
+import io.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.geccocrawler.socks5.handler.ProxyChannelTrafficShapingHandler;
-
-import io.netty.channel.ChannelHandlerContext;
+import java.net.*;
+import java.util.Enumeration;
 
 public class ProxyFlowLog4j implements ProxyFlowLog {
 

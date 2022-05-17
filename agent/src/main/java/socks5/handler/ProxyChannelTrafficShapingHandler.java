@@ -1,7 +1,6 @@
-package com.geccocrawler.socks5.handler;
+package socks5.handler;
 
-import com.geccocrawler.socks5.log.ProxyFlowLog;
-
+import socks5.log.ProxyFlowLog;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.traffic.ChannelTrafficShapingHandler;
 

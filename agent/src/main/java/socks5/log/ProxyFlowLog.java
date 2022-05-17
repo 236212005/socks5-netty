@@ -1,4 +1,4 @@
-package com.geccocrawler.socks5.log;
+package socks5.log;
 
 import io.netty.channel.ChannelHandlerContext;
 

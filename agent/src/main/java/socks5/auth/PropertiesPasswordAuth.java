@@ -1,4 +1,4 @@
-package com.geccocrawler.socks5.auth;
+package socks5.auth;
 
 import java.io.IOException;
 import java.util.Properties;
