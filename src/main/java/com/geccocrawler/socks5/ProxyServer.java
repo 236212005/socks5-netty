@@ -137,7 +137,7 @@ public class ProxyServer {
 					if(logging) {
 						ch.pipeline().addLast(new LoggingHandler());
 					}
-					//Socks5MessagByteBuf
+					//Socks5MessageByteBuf
 					ch.pipeline().addLast(Socks5ServerEncoder.DEFAULT);
 					//sock5 init
 					ch.pipeline().addLast(new Socks5InitialRequestDecoder());
