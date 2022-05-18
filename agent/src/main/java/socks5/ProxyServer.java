@@ -50,7 +50,7 @@ public class ProxyServer {
         log.info("\r\nUsage: \r\n" +
                 "-l: Open socks5 logging use true, else use false, default is false.\r\n" +
                 "-p: Specify a port which server listened, default is 11080.\r\n" +
-                "-a: If need a identification to access the server. If need plz use true, else use false, default is false.");
+                "-a: If need an identification to access the server. If need plz use true, else use false, default is false.");
         Map<String, String> argMap = buildParams(args);
         int exitCode = 0;
         try {
