@@ -1,16 +1,6 @@
 package socks5;
 
-import lombok.extern.slf4j.Slf4j;
-import socks5.auth.PasswordAuth;
-import socks5.auth.PropertiesPasswordAuth;
-import socks5.handler.ChannelListener;
-import socks5.handler.ProxyChannelTrafficShapingHandler;
-import socks5.handler.ProxyIdleHandler;
-import socks5.handler.ss5.Socks5CommandRequestHandler;
-import socks5.handler.ss5.Socks5InitialRequestHandler;
-import socks5.handler.ss5.Socks5PasswordAuthRequestHandler;
-import socks5.log.ProxyFlowLog;
-import socks5.log.ProxyFlowLog4j;
+import cn.hutool.core.util.StrUtil;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -25,8 +15,19 @@ import io.netty.handler.codec.socksx.v5.Socks5PasswordAuthRequestDecoder;
 import io.netty.handler.codec.socksx.v5.Socks5ServerEncoder;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
+import lombok.extern.slf4j.Slf4j;
+import socks5.auth.PasswordAuth;
+import socks5.auth.PropertiesPasswordAuth;
+import socks5.handler.ProxyChannelTrafficShapingHandler;
+import socks5.handler.ProxyIdleHandler;
+import socks5.handler.ss5.Socks5CommandRequestHandler;
+import socks5.handler.ss5.Socks5InitialRequestHandler;
+import socks5.handler.ss5.Socks5PasswordAuthRequestHandler;
+import socks5.log.ProxyFlowLog;
+import socks5.log.ProxyFlowLog4j;
 
-import java.util.Properties;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 public class ProxyServer {
@@ -46,17 +47,33 @@ public class ProxyServer {
     }
 
     public static void main(String[] args) throws Exception {
-        int port = 11080;
-        boolean auth = false;
-        Properties properties = new Properties();
+        log.info("\r\nUsage: \r\n" +
+                "-l: Open socks5 logging use true, else use false, default is false.\r\n" +
+                "-p: Specify a port which server listened, default is 11080.\r\n" +
+                "-a: If need a identification to access the server. If need plz use true, else use false, default is false.");
+        Map<String, String> argMap = buildParams(args);
+        int exitCode = 0;
         try {
-            properties.load(ProxyServer.class.getResourceAsStream("/config.properties"));
-            port = Integer.parseInt(properties.getProperty("port"));
-            auth = Boolean.parseBoolean(properties.getProperty("auth"));
+            int port = Integer.parseInt(argMap.get("-p") == null ? "11080" : argMap.get("-p"));
+            boolean auth = Boolean.parseBoolean(argMap.get("-a") == null ? "false" : argMap.get("-a"));
+            boolean logging = Boolean.parseBoolean(argMap.get("-l") == null ? "false" : argMap.get("-l"));
+            ProxyServer.getInstance().start(logging, auth, port);
         } catch (Exception e) {
-            log.warn("load config.properties error, default port 11080, auth false!");
+            log.error(e.getMessage(), e);
+            exitCode = 1;
         }
-        ProxyServer.getInstance().start(true, auth, port);
+        System.exit(exitCode);
+    }
+
+    private static Map<String, String> buildParams(String[] args) {
+        Map<String, String> resultMap = new HashMap<>();
+        for (int i = 0; i < args.length; i++) {
+            if (StrUtil.isNotBlank(args[i]) && args[i].startsWith("-")) {
+                resultMap.put(args[i], args[i + 1]);
+                i++;
+            }
+        }
+        return resultMap;
     }
 
     public void start(boolean logging, boolean isAuth, int port) throws Exception {

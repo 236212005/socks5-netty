@@ -20,11 +20,12 @@ public class Socks5InitialRequestHandler extends SimpleChannelInboundHandler<Def
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, DefaultSocks5InitialRequest msg) throws Exception {
-        log.debug("初始化ss5连接 : " + msg);
+        log.debug("初始化ss5连接，远端地址:{}", ctx.channel().remoteAddress());
         if (msg.decoderResult().isFailure()) {
-            log.debug("不是ss5协议");
+            log.debug("远端链接使用了无法解析协议版本：{}", msg.version());
             ctx.fireChannelRead(msg);
         } else {
+            log.debug("socks5版本号:{}", msg.version());
             if (msg.version().equals(SocksVersion.SOCKS5)) {
                 ctx.writeAndFlush(new DefaultSocks5InitialResponse(proxyServer.isAuth() ?
                         Socks5AuthMethod.PASSWORD : Socks5AuthMethod.NO_AUTH));

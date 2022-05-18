@@ -1,9 +1,6 @@
 package socks5.handler.ss5;
 
 import io.netty.channel.ChannelFuture;
-import lombok.extern.slf4j.Slf4j;
-import socks5.auth.PasswordAuth;
-import socks5.handler.ProxyChannelTrafficShapingHandler;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -11,6 +8,9 @@ import io.netty.handler.codec.socksx.v5.DefaultSocks5PasswordAuthRequest;
 import io.netty.handler.codec.socksx.v5.DefaultSocks5PasswordAuthResponse;
 import io.netty.handler.codec.socksx.v5.Socks5PasswordAuthResponse;
 import io.netty.handler.codec.socksx.v5.Socks5PasswordAuthStatus;
+import lombok.extern.slf4j.Slf4j;
+import socks5.auth.PasswordAuth;
+import socks5.handler.ProxyChannelTrafficShapingHandler;
 
 @Slf4j
 public class Socks5PasswordAuthRequestHandler extends SimpleChannelInboundHandler<DefaultSocks5PasswordAuthRequest> {
@@ -25,6 +25,7 @@ public class Socks5PasswordAuthRequestHandler extends SimpleChannelInboundHandle
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, DefaultSocks5PasswordAuthRequest msg) throws Exception {
         log.debug("用户名密码 : " + msg.username() + "," + msg.password());
+        ProxyChannelTrafficShapingHandler.username(ctx, msg.username());
         boolean authFlag = passwordAuth.auth(msg.username(), msg.password());
         Socks5PasswordAuthResponse passwordAuthResponse = new DefaultSocks5PasswordAuthResponse(
                 authFlag ? Socks5PasswordAuthStatus.SUCCESS : Socks5PasswordAuthStatus.FAILURE);

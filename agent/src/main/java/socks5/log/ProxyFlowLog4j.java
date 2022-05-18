@@ -5,6 +5,8 @@ import socks5.handler.ProxyChannelTrafficShapingHandler;
 import io.netty.channel.ChannelHandlerContext;
 
 import java.net.*;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Enumeration;
 
 @Slf4j
@@ -18,25 +20,29 @@ public class ProxyFlowLog4j implements ProxyFlowLog {
         long readByte = trafficShapingHandler.trafficCounter().cumulativeReadBytes();
         long writeByte = trafficShapingHandler.trafficCounter().cumulativeWrittenBytes();
 
-//        logger.info("======================" + System.lineSeparator() +
-//                        "用户：{}" + System.lineSeparator() +
-//                        "开始时间：{}" + System.lineSeparator() +
-//                        "结束时间：{}" + System.lineSeparator() +
-//                        "本地监听：{}:{}" + System.lineSeparator() +
-//                        "远端信息：{}:{}" + System.lineSeparator() +
-//                        "读取字节：{}" + System.lineSeparator() +
-//                        "写入字节：{}" + System.lineSeparator() +
-//                        "服务器IO字节数：{}" + System.lineSeparator(),
-//                trafficShapingHandler.getUsername(),
-//                new SimpleDateFormat("yyyy-MM-dd HH:mm:sss").format(new Timestamp(trafficShapingHandler.getBeginTime())),
-//                new SimpleDateFormat("yyyy-MM-dd HH:mm:sss").format(new Timestamp(trafficShapingHandler.getEndTime())),
-//                getLocalAddress(),
-//                localAddress.getPort(),
-//                remoteAddress.getAddress().getHostAddress(),
-//                remoteAddress.getPort(),
-//                readByte,
-//                writeByte,
-//                (readByte + writeByte));
+        double opTime = (double) (trafficShapingHandler.getEndTime() - trafficShapingHandler.getBeginTime()) / 1000;
+        log.info("用户：{}" +
+                        "，开始时间：{}" +
+                        "，结束时间：{}" +
+                        "，代理时长：{}秒" +
+                        "，本地监听：{}:{}" +
+                        "，远端信息：{}:{}" +
+                        "，读取字节：{}" +
+                        "，写入字节：{}" +
+                        "，服务器IO字节数：{}" +
+                        "，IO处理速度：{}字节/秒",
+                trafficShapingHandler.getUsername(),
+                new SimpleDateFormat("yyyy-MM-dd HH:mm:sss").format(new Timestamp(trafficShapingHandler.getBeginTime())),
+                new SimpleDateFormat("yyyy-MM-dd HH:mm:sss").format(new Timestamp(trafficShapingHandler.getEndTime())),
+                opTime,
+                getLocalAddress(),
+                localAddress.getPort(),
+                remoteAddress.getAddress().getHostAddress(),
+                remoteAddress.getPort(),
+                readByte,
+                writeByte,
+                (readByte + writeByte),
+                (readByte + writeByte) / opTime);
     }
 
     /**
