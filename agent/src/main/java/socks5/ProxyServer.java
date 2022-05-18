@@ -1,5 +1,6 @@
 package socks5;
 
+import lombok.extern.slf4j.Slf4j;
 import socks5.auth.PasswordAuth;
 import socks5.auth.PropertiesPasswordAuth;
 import socks5.handler.ChannelListener;
@@ -24,93 +25,46 @@ import io.netty.handler.codec.socksx.v5.Socks5PasswordAuthRequestDecoder;
 import io.netty.handler.codec.socksx.v5.Socks5ServerEncoder;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
+@Slf4j
 public class ProxyServer {
 
-    private EventLoopGroup bossGroup = new NioEventLoopGroup();
+    private static final ProxyServer instance = new ProxyServer();
+    private boolean isAuth;
 
-    public EventLoopGroup getBossGroup() {
-        return bossGroup;
+    private ProxyServer() {
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(ProxyServer.class);
-
-    private int port;
-
-    private boolean auth;
-
-    private boolean logging;
-
-    private ProxyFlowLog proxyFlowLog;
-
-    private ChannelListener channelListener;
-
-    private PasswordAuth passwordAuth;
-
-    private ProxyServer(int port) {
-        this.port = port;
-    }
-
-    public static ProxyServer create(int port) {
-        return new ProxyServer(port);
-    }
-
-    public ProxyServer auth(boolean auth) {
-        this.auth = auth;
-        return this;
-    }
-
-    public ProxyServer logging(boolean logging) {
-        this.logging = logging;
-        return this;
-    }
-
-    public ProxyServer proxyFlowLog(ProxyFlowLog proxyFlowLog) {
-        this.proxyFlowLog = proxyFlowLog;
-        return this;
-    }
-
-    public ProxyServer channelListener(ChannelListener channelListener) {
-        this.channelListener = channelListener;
-        return this;
-    }
-
-    public ProxyServer passwordAuth(PasswordAuth passwordAuth) {
-        this.passwordAuth = passwordAuth;
-        return this;
-    }
-
-    public ProxyFlowLog getProxyFlowLog() {
-        return proxyFlowLog;
-    }
-
-    public ChannelListener getChannelListener() {
-        return channelListener;
-    }
-
-    public PasswordAuth getPasswordAuth() {
-        return passwordAuth;
+    public static ProxyServer getInstance() {
+        return instance;
     }
 
     public boolean isAuth() {
-        return auth;
+        return isAuth;
     }
 
-    public boolean isLogging() {
-        return logging;
+    public static void main(String[] args) throws Exception {
+        int port = 11080;
+        boolean auth = false;
+        Properties properties = new Properties();
+        try {
+            properties.load(ProxyServer.class.getResourceAsStream("/config.properties"));
+            port = Integer.parseInt(properties.getProperty("port"));
+            auth = Boolean.parseBoolean(properties.getProperty("auth"));
+        } catch (Exception e) {
+            log.warn("load config.properties error, default port 11080, auth false!");
+        }
+        ProxyServer.getInstance().start(true, auth, port);
     }
 
-    public void start() throws Exception {
-        if (proxyFlowLog == null) {
-            proxyFlowLog = new ProxyFlowLog4j();
-        }
-        if (passwordAuth == null) {
-            passwordAuth = new PropertiesPasswordAuth();
-        }
+    public void start(boolean logging, boolean isAuth, int port) throws Exception {
+        log.info("Starting server with {} ,{} at port {}", logging ? "logging" : "no logging", isAuth ? "auth" : "no auth", port);
+        this.isAuth = isAuth;
+        ProxyFlowLog proxyFlowLog = new ProxyFlowLog4j();
+        //TODO USE DATABASE
+        PasswordAuth passwordAuth = new PropertiesPasswordAuth();
         EventLoopGroup boss = new NioEventLoopGroup(8);
         EventLoopGroup worker = new NioEventLoopGroup();
         try {
@@ -125,7 +79,7 @@ public class ProxyServer {
                             //流量统计
                             ch.pipeline().addLast(
                                     ProxyChannelTrafficShapingHandler.PROXY_TRAFFIC,
-                                    new ProxyChannelTrafficShapingHandler(3000, proxyFlowLog, channelListener)
+                                    new ProxyChannelTrafficShapingHandler(3000, proxyFlowLog)
                             );
                             //channel超时处理
                             ch.pipeline().addLast(new IdleStateHandler(3, 30, 0));
@@ -140,39 +94,25 @@ public class ProxyServer {
                             ch.pipeline().addLast(new Socks5InitialRequestDecoder());
                             //sock5 init
                             ch.pipeline().addLast(new Socks5InitialRequestHandler(ProxyServer.this));
-                            if (isAuth()) {
+                            if (isAuth) {
                                 //socks auth
                                 ch.pipeline().addLast(new Socks5PasswordAuthRequestDecoder());
                                 //socks auth
-                                ch.pipeline().addLast(new Socks5PasswordAuthRequestHandler(getPasswordAuth()));
+                                ch.pipeline().addLast(new Socks5PasswordAuthRequestHandler(passwordAuth));
                             }
                             //socks connection
                             ch.pipeline().addLast(new Socks5CommandRequestDecoder());
                             //Socks connection
-                            ch.pipeline().addLast(new Socks5CommandRequestHandler(ProxyServer.this.getBossGroup()));
+                            ch.pipeline().addLast(new Socks5CommandRequestHandler(new NioEventLoopGroup()));
                         }
                     });
 
             ChannelFuture future = bootstrap.bind(port).sync();
-            logger.debug("bind port : " + port);
+            log.debug("bind port : " + port);
             future.channel().closeFuture().sync();
         } finally {
             boss.shutdownGracefully();
             worker.shutdownGracefully();
         }
-    }
-
-    public static void main(String[] args) throws Exception {
-        int port = 11080;
-        boolean auth = false;
-        Properties properties = new Properties();
-        try {
-            properties.load(ProxyServer.class.getResourceAsStream("/config.properties"));
-            port = Integer.parseInt(properties.getProperty("port"));
-            auth = Boolean.parseBoolean(properties.getProperty("auth"));
-        } catch (Exception e) {
-            logger.warn("load config.properties error, default port 11080, auth false!");
-        }
-        ProxyServer.create(port).logging(true).auth(auth).start();
     }
 }

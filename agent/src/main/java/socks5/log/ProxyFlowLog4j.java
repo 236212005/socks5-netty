@@ -1,16 +1,14 @@
 package socks5.log;
 
+import lombok.extern.slf4j.Slf4j;
 import socks5.handler.ProxyChannelTrafficShapingHandler;
 import io.netty.channel.ChannelHandlerContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.net.*;
 import java.util.Enumeration;
 
+@Slf4j
 public class ProxyFlowLog4j implements ProxyFlowLog {
-
-    private static final Logger logger = LoggerFactory.getLogger(ProxyFlowLog4j.class);
 
     public void log(ChannelHandlerContext ctx) {
         ProxyChannelTrafficShapingHandler trafficShapingHandler = ProxyChannelTrafficShapingHandler.get(ctx);
@@ -62,7 +60,7 @@ public class ProxyFlowLog4j implements ProxyFlowLog {
                 }
             }
         } catch (SocketException e) {
-            logger.debug("Error when getting host ip address: <{}>.", e.getMessage());
+            log.debug("Error when getting host ip address: <{}>.", e.getMessage());
         }
         return "127.0.0.1";
     }
