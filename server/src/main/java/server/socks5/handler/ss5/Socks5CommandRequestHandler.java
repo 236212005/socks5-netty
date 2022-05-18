@@ -1,4 +1,4 @@
-package socks5.handler.ss5;
+package server.socks5.handler.ss5;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;

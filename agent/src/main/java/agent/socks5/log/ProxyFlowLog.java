@@ -1,4 +1,4 @@
-package socks5.log;
+package agent.socks5.log;
 
 import io.netty.channel.ChannelHandlerContext;
 

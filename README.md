@@ -1,4 +1,4 @@
-# socks5-netty
+# agent.socks5-netty
 基于netty实现的socks5代理
 
 ## 安装
@@ -22,7 +22,7 @@
 	- user=password 鉴权用户密码，每行一个
 
 - log4j.perperties
-	- log4j.logger.com.geccocrawler.socks5=info  默认级别是info只输出流量日志
+	- log4j.logger.com.geccocrawler.agent.socks5=info  默认级别是info只输出流量日志
 
 ## 扩展
 - 自定义鉴权方式

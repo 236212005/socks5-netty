@@ -90,7 +90,7 @@ EventLoop本身由一个线程驱动，处理一个Channel的所有IO事件，�
 
 ## 致谢
 
-感谢作者提供了一个很好的学习 netty socks5 的项目。
+感谢作者提供了一个很好的学习 netty agent.socks5 的项目。
 
 之前一直想写一个代理，以了解http原理，最终目的是达到大陆到国外的不可描述的目的。作者的项目是很好的sslocal-加密 的项目。
 
@@ -115,8 +115,8 @@ netty实战告诉我，服务器端有两个NioEventLoopGroup，客户端有一�
 
 ```
     private EventLoopGroup bossGroup;
-    public Socks5CommandRequestHandler(ProxyServer proxyServer) {
-        bossGroup=proxyServer.getBossGroup();
+    public Socks5CommandRequestHandler(ProxyServer proxyAgent) {
+        bossGroup=proxyAgent.getBossGroup();
     }
 ```
 

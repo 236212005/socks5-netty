@@ -1,5 +1,6 @@
-package socks5.handler.ss5;
+package agent.socks5.handler.ss5;
 
+import agent.socks5.ProxyAgent;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.socksx.SocksVersion;
@@ -7,15 +8,14 @@ import io.netty.handler.codec.socksx.v5.DefaultSocks5InitialRequest;
 import io.netty.handler.codec.socksx.v5.DefaultSocks5InitialResponse;
 import io.netty.handler.codec.socksx.v5.Socks5AuthMethod;
 import lombok.extern.slf4j.Slf4j;
-import socks5.ProxyServer;
 
 @Slf4j
 public class Socks5InitialRequestHandler extends SimpleChannelInboundHandler<DefaultSocks5InitialRequest> {
 
-    private final ProxyServer proxyServer;
+    private final ProxyAgent proxyAgent;
 
-    public Socks5InitialRequestHandler(ProxyServer proxyServer) {
-        this.proxyServer = proxyServer;
+    public Socks5InitialRequestHandler(ProxyAgent proxyAgent) {
+        this.proxyAgent = proxyAgent;
     }
 
     @Override
@@ -27,7 +27,7 @@ public class Socks5InitialRequestHandler extends SimpleChannelInboundHandler<Def
         } else {
             log.debug("socks5版本号:{}", msg.version());
             if (msg.version().equals(SocksVersion.SOCKS5)) {
-                ctx.writeAndFlush(new DefaultSocks5InitialResponse(proxyServer.isAuth() ?
+                ctx.writeAndFlush(new DefaultSocks5InitialResponse(proxyAgent.isAuth() ?
                         Socks5AuthMethod.PASSWORD : Socks5AuthMethod.NO_AUTH));
             }
         }

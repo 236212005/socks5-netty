@@ -1,7 +1,7 @@
-package socks5.handler;
+package agent.socks5.handler;
 
 import lombok.experimental.Accessors;
-import socks5.log.ProxyFlowLog;
+import agent.socks5.log.ProxyFlowLog;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.traffic.ChannelTrafficShapingHandler;
 

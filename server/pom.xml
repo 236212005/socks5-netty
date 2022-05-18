@@ -5,10 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.geccocrawler</groupId>
-    <artifactId>agent</artifactId>
+    <artifactId>server</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
-    <name>agent</name>
+    <name>server</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

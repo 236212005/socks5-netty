@@ -1,4 +1,4 @@
-package socks5;
+package agent.socks5;
 
 import cn.hutool.core.util.StrUtil;
 import io.netty.bootstrap.ServerBootstrap;
@@ -16,29 +16,29 @@ import io.netty.handler.codec.socksx.v5.Socks5ServerEncoder;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
-import socks5.auth.PasswordAuth;
-import socks5.auth.PropertiesPasswordAuth;
-import socks5.handler.ProxyChannelTrafficShapingHandler;
-import socks5.handler.ProxyIdleHandler;
-import socks5.handler.ss5.Socks5CommandRequestHandler;
-import socks5.handler.ss5.Socks5InitialRequestHandler;
-import socks5.handler.ss5.Socks5PasswordAuthRequestHandler;
-import socks5.log.ProxyFlowLog;
-import socks5.log.ProxyFlowLog4j;
+import agent.socks5.auth.PasswordAuth;
+import agent.socks5.auth.PropertiesPasswordAuth;
+import agent.socks5.handler.ProxyChannelTrafficShapingHandler;
+import agent.socks5.handler.ProxyIdleHandler;
+import agent.socks5.handler.ss5.Socks5CommandRequestHandler;
+import agent.socks5.handler.ss5.Socks5InitialRequestHandler;
+import agent.socks5.handler.ss5.Socks5PasswordAuthRequestHandler;
+import agent.socks5.log.ProxyFlowLog;
+import agent.socks5.log.ProxyFlowLog4j;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-public class ProxyServer {
+public class ProxyAgent {
 
-    private static final ProxyServer instance = new ProxyServer();
+    private static final ProxyAgent instance = new ProxyAgent();
     private boolean isAuth;
 
-    private ProxyServer() {
+    private ProxyAgent() {
     }
 
-    public static ProxyServer getInstance() {
+    public static ProxyAgent getInstance() {
         return instance;
     }
 
@@ -48,7 +48,7 @@ public class ProxyServer {
 
     public static void main(String[] args) throws Exception {
         log.info("\r\nUsage: \r\n" +
-                "-l: Open socks5 logging use true, else use false, default is false.\r\n" +
+                "-l: Open agent.socks5 logging use true, else use false, default is false.\r\n" +
                 "-p: Specify a port which server listened, default is 11080.\r\n" +
                 "-a: If need an identification to access the server. If need plz use true, else use false, default is false.");
         Map<String, String> argMap = buildParams(args);
@@ -57,7 +57,7 @@ public class ProxyServer {
             int port = Integer.parseInt(argMap.get("-p") == null ? "11080" : argMap.get("-p"));
             boolean auth = Boolean.parseBoolean(argMap.get("-a") == null ? "false" : argMap.get("-a"));
             boolean logging = Boolean.parseBoolean(argMap.get("-l") == null ? "false" : argMap.get("-l"));
-            ProxyServer.getInstance().start(logging, auth, port);
+            ProxyAgent.getInstance().start(logging, auth, port);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             exitCode = 1;
@@ -110,7 +110,7 @@ public class ProxyServer {
                             //sock5 init
                             ch.pipeline().addLast(new Socks5InitialRequestDecoder());
                             //sock5 init
-                            ch.pipeline().addLast(new Socks5InitialRequestHandler(ProxyServer.this));
+                            ch.pipeline().addLast(new Socks5InitialRequestHandler(ProxyAgent.this));
                             if (isAuth) {
                                 //socks auth
                                 ch.pipeline().addLast(new Socks5PasswordAuthRequestDecoder());

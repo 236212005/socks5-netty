@@ -1,7 +1,7 @@
-package socks5.log;
+package agent.socks5.log;
 
 import lombok.extern.slf4j.Slf4j;
-import socks5.handler.ProxyChannelTrafficShapingHandler;
+import agent.socks5.handler.ProxyChannelTrafficShapingHandler;
 import io.netty.channel.ChannelHandlerContext;
 
 import java.net.*;

@@ -1,4 +1,4 @@
-package socks5.handler;
+package server.socks5.handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;

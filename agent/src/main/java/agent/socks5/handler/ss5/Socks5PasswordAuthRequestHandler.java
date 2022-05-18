@@ -1,4 +1,4 @@
-package socks5.handler.ss5;
+package agent.socks5.handler.ss5;
 
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -9,8 +9,8 @@ import io.netty.handler.codec.socksx.v5.DefaultSocks5PasswordAuthResponse;
 import io.netty.handler.codec.socksx.v5.Socks5PasswordAuthResponse;
 import io.netty.handler.codec.socksx.v5.Socks5PasswordAuthStatus;
 import lombok.extern.slf4j.Slf4j;
-import socks5.auth.PasswordAuth;
-import socks5.handler.ProxyChannelTrafficShapingHandler;
+import agent.socks5.auth.PasswordAuth;
+import agent.socks5.handler.ProxyChannelTrafficShapingHandler;
 
 @Slf4j
 public class Socks5PasswordAuthRequestHandler extends SimpleChannelInboundHandler<DefaultSocks5PasswordAuthRequest> {
