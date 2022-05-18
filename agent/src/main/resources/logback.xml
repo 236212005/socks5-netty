@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <!-- 日志存放路径 -->
-    <property name="log.path" value="logs" />
+    <property name="log.path" value="logs"/>
     <!-- 日志输出格式 -->
-    <property name="log.pattern" value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{20} - [%method,%line] - %msg%n" />
+    <property name="log.pattern" value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{20} - [%method,%line] - %msg%n"/>
 
     <!-- 控制台输出 -->
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
@@ -57,16 +57,22 @@
         </filter>
     </appender>
 
-    <!--日志级别-->
+    <!--日志级别：生产-->
     <root level="info">
-        <appender-ref ref="console" />
-        <appender-ref ref="file_info" />
-        <appender-ref ref="file_error" />
+        <appender-ref ref="file_error"/>
     </root>
-<!--    <root level="debug">-->
-<!--        <appender-ref ref="console" />-->
-<!--    </root>-->
-<!--    <root level="trace">-->
-<!--        <appender-ref ref="console" />-->
-<!--    </root>-->
+    <!--日志级别：测试-->
+    <root level="info">
+        <appender-ref ref="console"/>
+        <appender-ref ref="file_info"/>
+        <appender-ref ref="file_error"/>
+    </root>
+    <!--日志级别：开发-->
+    <!--    <root level="debug">-->
+    <!--        <appender-ref ref="console" />-->
+    <!--    </root>-->
+    <!--日志级别：开发-->
+    <!--    <root level="trace">-->
+    <!--        <appender-ref ref="console" />-->
+    <!--    </root>-->
 </configuration>
